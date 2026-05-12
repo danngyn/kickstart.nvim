@@ -179,6 +179,9 @@ do
   --  See `:help hlsearch`
   vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
+  vim.keymap.set('n', ']b', '<cmd>bnext<CR>', { desc = 'Next buffer' })
+  vim.keymap.set('n', '[b', '<cmd>bprev<CR>', { desc = 'Previous buffer' })
+
   -- Diagnostic Config & Keymaps
   --  See `:help vim.diagnostic.Opts`
   vim.diagnostic.config {
@@ -240,6 +243,12 @@ do
   -- Highlight when yanking (copying) text
   --  Try it with `yap` in normal mode
   --  See `:help vim.hl.on_yank()`
+  -- Auto-reload files when changed outside of nvim
+  vim.o.autoread = true
+  vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold' }, {
+    callback = function() vim.cmd 'checktime' end,
+  })
+
   vim.api.nvim_create_autocmd('TextYankPost', {
     desc = 'Highlight when yanking (copying) text',
     group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
@@ -347,20 +356,7 @@ do
   -- since otherwise the icons won't display properly.
   if vim.g.have_nerd_font then vim.pack.add { gh 'nvim-tree/nvim-web-devicons' } end
 
-  -- Here is a more advanced configuration example that passes options to `gitsigns.nvim`
-  --
-  -- See `:help gitsigns` to understand what each configuration key does.
-  -- Adds git related signs to the gutter, as well as utilities for managing changes
-  vim.pack.add { gh 'lewis6991/gitsigns.nvim' }
-  require('gitsigns').setup {
-    signs = {
-      add = { text = '+' }, ---@diagnostic disable-line: missing-fields
-      change = { text = '~' }, ---@diagnostic disable-line: missing-fields
-      delete = { text = '_' }, ---@diagnostic disable-line: missing-fields
-      topdelete = { text = '‾' }, ---@diagnostic disable-line: missing-fields
-      changedelete = { text = '~' }, ---@diagnostic disable-line: missing-fields
-    },
-  }
+  -- gitsigns is configured in kickstart/plugins/gitsigns.lua
 
   -- Useful plugin to show you pending keybinds.
   vim.pack.add { gh 'folke/which-key.nvim' }
@@ -383,9 +379,8 @@ do
   -- change the command under that to load whatever the name of that colorscheme is.
   --
   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'EdenEast/nightfox.nvim' }
-
-  vim.cmd.colorscheme 'terafox'
+  vim.pack.add { gh 'folke/tokyonight.nvim' }
+  vim.cmd.colorscheme 'tokyonight-night'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -416,6 +411,7 @@ do
   -- - sd'   - [S]urround [D]elete [']quotes
   -- - sr)'  - [S]urround [R]eplace [)] [']
   require('mini.surround').setup()
+  require('mini.tabline').setup()
 
   -- Simple and easy statusline.
   --  You could remove this setup call if you don't like it,
@@ -429,6 +425,19 @@ do
   -- cursor location to LINE:COLUMN
   ---@diagnostic disable-next-line: duplicate-set-field
   statusline.section_location = function() return '%2l:%-2v' end
+
+  ---@diagnostic disable-next-line: duplicate-set-field
+  statusline.section_filename = function()
+    local filename = vim.fn.expand '%:t'
+    if filename == '' then return '' end
+    local parent = vim.fn.expand '%:p:h:t'
+    local modified = vim.bo.modified and ' [+]' or ''
+    local blame = vim.b.gitsigns_blame_line or ''
+    if blame ~= '' then
+      return parent .. '/' .. filename .. modified .. '  ' .. blame
+    end
+    return parent .. '/' .. filename .. modified
+  end
 
   -- ... and there is more!
   --  Check out: https://github.com/nvim-mini/mini.nvim
@@ -824,7 +833,7 @@ do
       -- <c-k>: Toggle signature help
       --
       -- See `:help blink-cmp-config-keymap` for defining your own keymap
-      preset = 'default',
+      preset = 'super-tab',
 
       -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
       --    https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps
@@ -943,12 +952,12 @@ do
   -- require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
   require 'kickstart.plugins.neo-tree'
-  -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
+  require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
 
   -- NOTE: You can add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
-  -- require 'custom.plugins'
+  require 'custom.plugins'
 end
 
 -- The line beneath this is called `modeline`. See `:help modeline`
