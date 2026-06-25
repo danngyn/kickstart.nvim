@@ -117,6 +117,23 @@
 | `<leader>ypr` | Copy path relative to repo root |
 | `<leader>ypa` | Copy absolute path |
 
+## Git Conflicts (git-conflict.nvim)
+
+| Keybind | Action |
+|---------|--------|
+| `co` | Choose ours |
+| `ct` | Choose theirs |
+| `cb` | Choose both |
+| `c0` | Choose none |
+| `]x` | Next conflict |
+| `[x` | Previous conflict |
+
+## Markdown (render-markdown.nvim)
+
+| Command | Action |
+|---------|--------|
+| `:RenderMarkdown toggle` | Toggle between rendered and raw view |
+
 ## Surround (mini.surround)
 
 | Keybind | Action |

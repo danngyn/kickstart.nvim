@@ -5,6 +5,7 @@
 vim.pack.add { 'https://github.com/lewis6991/gitsigns.nvim' }
 
 require('gitsigns').setup {
+  base = 'HEAD',
   current_line_blame = true,
   current_line_blame_opts = {
     virt_text = false, -- hide inline, we show it in statusline instead

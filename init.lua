@@ -182,6 +182,8 @@ do
   vim.keymap.set('n', ']b', '<cmd>bnext<CR>', { desc = 'Next buffer' })
   vim.keymap.set('n', '[b', '<cmd>bprev<CR>', { desc = 'Previous buffer' })
 
+  vim.keymap.set('n', '<leader>tt', '<cmd>split | terminal<CR>', { desc = 'Open [T]erminal in split' })
+
   -- Diagnostic Config & Keymaps
   --  See `:help vim.diagnostic.Opts`
   vim.diagnostic.config {
@@ -379,8 +381,8 @@ do
   -- change the command under that to load whatever the name of that colorscheme is.
   --
   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'folke/tokyonight.nvim' }
-  vim.cmd.colorscheme 'tokyonight-night'
+  vim.pack.add { gh 'EdenEast/nightfox.nvim' }
+  vim.cmd.colorscheme 'nightfox'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -434,6 +436,7 @@ do
     local modified = vim.bo.modified and ' [+]' or ''
     local blame = vim.b.gitsigns_blame_line or ''
     if blame ~= '' then
+      if #blame > 120 then blame = blame:sub(1, 120) .. '...' end
       return parent .. '/' .. filename .. modified .. '  ' .. blame
     end
     return parent .. '/' .. filename .. modified
